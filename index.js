@@ -1,64 +1,30 @@
-const fs = require('fs');
 const transform = require(__dirname + '/lib/transform');
-
-fs.readFile(__dirname + '/img/mario.bmp', function(err, data) {
-  if (err) return console.log(err);
-  handleTransform(data);
-});
+const fileHandler = require(__dirname + '/lib/fileHandler');
+const dataHandler = require(__dirname + '/lib/dataHandler');
+const cmdHandler = require(__dirname + '/lib/cmdHandler');
 
 var bitmap = {};
+var index = {};
 
-var handleTransform = function(data) {
-  detectPalette(data);
-  convertFromBuf();
-  colorTransform();
-  convertToBuf();
-  writeNewFile();
+index.handleTransform = function(data, type, param) {
+  dataHandler.process(data, bitmap);
+  bitmap.colors = dataHandler.convertFromBuf(bitmap.buf, bitmap.colorDepth / 8);
+  bitmap.transformed = transform[type](bitmap.colors, param);
+  dataHandler.updateBuf(bitmap.buf, bitmap.colorDepth / 8, bitmap.transformed);
+  fileHandler.exportNew(bitmap.data);
 };
 
-var detectPalette = function(data) {
-  bitmap.data = data;
-  var numColor = data.readUInt32LE(46);
-  var pixelStart = data.readUInt32LE(10);
-  if (numColor) {
-    // palette
-    console.log('palette');
-    bitmap.buf = data.slice(pixelStart - numColor * 4, pixelStart);
-    bitmap.colorDepth = 32;
-  } else {
-    // non-pa
-    console.log('non-palette');
-    bitmap.buf = data.slice(pixelStart);
-    bitmap.colorDepth = data.readUInt16LE(28);
+index.init = function(list) {
+  if (list) {
+    fileHandler.read(list[0], function(data) {
+      index.handleTransform(data, list[1], list[2]);
+    });
   }
 };
 
-var colorTransform = function(type) {
-  bitmap.transformed = transform.inverse(bitmap.colors);
-};
-var convertFromBuf = function() {
-  console.log(bitmap.buf);
-  bitmap.colors = [];
-  var temp = [];
-  for (var i = 0; i < bitmap.buf.length; i++) {
-    temp.push(bitmap.buf.readUInt8(i));
-    if (temp.length === bitmap.colorDepth / 8) {
-      bitmap.colors.push(temp);
-      temp = [];
-    }
-  }
-  console.log(bitmap.colors.length);
-};
-
-var convertToBuf = function() {
-  for (var i = 0; i < bitmap.transformed.length; i++) {
-    for (var j = 0; j < bitmap.transformed[i].length; j++) {
-      bitmap.buf.writeUInt8(bitmap.transformed[i][j], bitmap.transformed[i].length * i + j);
-    }
-  }
-  console.log(bitmap.buf);
-};
-
-var writeNewFile = function() {
-  fs.writeFile(__dirname + '/img/transformed.bmp', bitmap.data);
-};
+if (process.argv.length > 2) {
+  var argList = cmdHandler(process.argv);
+  index.init(argList);
+} else {
+  console.log('Please specify an image path');
+}
