@@ -31,9 +31,15 @@ index.handleTransform = function(data, type) {
 };
 
 index.handleCli = function(argv) {
+  if (argv[2] === 'help')
+    return console.log('Color transform methods available: ' + Object.keys(transform).sort().join(', '));
+
+  var transformType = argv[3] || 'inverse';
+  if (!transform.hasOwnProperty(transformType))
+    return console.log('Color transform method does not exist. Use "help" to see a list of methods.');
+
   fileHandler.read(argv[2].toLowerCase(), function(data) {
-    var transformType = argv[3].toLowerCase() || 'inverse';
-    index.handleTransform(data, transformType)
+    index.handleTransform(data, transformType.toLowerCase());
   });
 };
 
