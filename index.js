@@ -1,64 +1,44 @@
-const fs = require('fs');
 const transform = require(__dirname + '/lib/transform');
-
-fs.readFile(__dirname + '/img/mario.bmp', function(err, data) {
-  if (err) return console.log(err);
-  handleTransform(data);
-});
+const fileHandler = require(__dirname + '/lib/fileHandler');
+const dataHandler = require(__dirname + '/lib/dataHandler');
 
 var bitmap = {};
+var index = {};
 
-var handleTransform = function(data) {
-  detectPalette(data);
-  convertFromBuf();
-  colorTransform();
-  convertToBuf();
-  writeNewFile();
-};
-
-var detectPalette = function(data) {
+index.detectPalette = function(data) {
   bitmap.data = data;
   var numColor = data.readUInt32LE(46);
   var pixelStart = data.readUInt32LE(10);
-  if (numColor) {
-    // palette
-    console.log('palette');
+  if (numColor) {  // palette
+    console.log(numColor + '-color palette');
     bitmap.buf = data.slice(pixelStart - numColor * 4, pixelStart);
     bitmap.colorDepth = 32;
-  } else {
-    // non-pa
-    console.log('non-palette');
+  } else {  // non-palette
     bitmap.buf = data.slice(pixelStart);
     bitmap.colorDepth = data.readUInt16LE(28);
+    console.log(bitmap.colorDepth + '-bit non-palette');
   }
 };
 
-var colorTransform = function(type) {
-  bitmap.transformed = transform.inverse(bitmap.colors);
-};
-var convertFromBuf = function() {
+index.handleTransform = function(data, type) {
+  index.detectPalette(data);
+  bitmap.colors = dataHandler.convertFromBuf(bitmap.buf, bitmap.colorDepth / 8);
   console.log(bitmap.buf);
-  bitmap.colors = [];
-  var temp = [];
-  for (var i = 0; i < bitmap.buf.length; i++) {
-    temp.push(bitmap.buf.readUInt8(i));
-    if (temp.length === bitmap.colorDepth / 8) {
-      bitmap.colors.push(temp);
-      temp = [];
-    }
-  }
-  console.log(bitmap.colors.length);
-};
-
-var convertToBuf = function() {
-  for (var i = 0; i < bitmap.transformed.length; i++) {
-    for (var j = 0; j < bitmap.transformed[i].length; j++) {
-      bitmap.buf.writeUInt8(bitmap.transformed[i][j], bitmap.transformed[i].length * i + j);
-    }
-  }
+  bitmap.transformed = transform[type](bitmap.colors);
+  dataHandler.updateBuf(bitmap.buf, bitmap.colorDepth / 8, bitmap.transformed);
   console.log(bitmap.buf);
+  fileHandler.exportNew(bitmap.data);
 };
 
-var writeNewFile = function() {
-  fs.writeFile(__dirname + '/img/transformed.bmp', bitmap.data);
+index.handleCli = function(argv) {
+  fileHandler.read(argv[2].toLowerCase(), function(data) {
+    var transformType = argv[3].toLowerCase() || 'inverse';
+    index.handleTransform(data, transformType)
+  });
 };
+
+if (process.argv.length > 2) {
+  index.handleCli(process.argv);
+} else {
+  console.log('Please specify an image path');
+}
