@@ -43,4 +43,10 @@ The `lightness` transform takes the average of the most and least prominent colo
 
 ### Other: `scatterbrain`
 ##### Scatterbrain
-`scatterbrain` randomizes the RGB values.
+`scatterbrain` randomizes each RGB value.
+
+##### Sepia-ish
+`sepiaish` makes the image a bit browner? Who even knows. Try it.
+
+##### Noise
+`noise` adds a fixed random value to each RGB value, to add some noise to the image.
