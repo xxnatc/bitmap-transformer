@@ -1,16 +1,14 @@
-var index = require(__dirname + '/../index.js');
+const fs = require('fs');
+const expect = require('chai').expect;
 
-var expect = require('chai').expect;
+const bitmapTest = require(__dirname + '/../index.js');
+const transform = require(__dirname + '/../lib/transform');
+const fileHandler = require(__dirname + '/../lib/fileHandler');
+const dataHandler = require(__dirname + '/../lib/dataHandler');
+const cmdHandler = require(__dirname + '/../lib/cmdHandler');
 
-describe('Here is bitmap read testing', function(){
-  it('should read as buffer', function(){
-     expect(4+5).to.equal(9);
-  });
-});
-
-
-describe('Place Holder', function(){
-  it('Place Holder', function(){
-     expect(4+5).to.equal(9);
+describe('the bitmap writing function', function() {
+  it('should have written a new file', function() {
+    expect(fs.existsSync(__dirname + '/../img/transformed.bmp')).to.eql(true);
   });
 });
