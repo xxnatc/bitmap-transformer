@@ -35,6 +35,13 @@ These colorscales work the same way - for each pixel, a specific color value (R/
 node index.js img/mario.bmp bluescale=4.3
 ```
 
+### Color Shear: `addredscale`, `addgreenscale`, `addbluescale`
+The `addredscale`, `addgreenscale`, `addbluescale` series adds a constant value defined by the user in the command line. If no value is passed, the default is set to 10.
+
+```
+node index.js img/mario.bmp addredscale=20
+```
+
 ### Grayscale: `grayscale`, `lightness`, `luminosity`
 #### Average grayscale
 The average `grayscale`, as suggested by its name, averages the RGB value at each pixel and replaces each with `(R + G + B) / 3`.
