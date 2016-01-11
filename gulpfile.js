@@ -13,6 +13,26 @@ gulp.task('jshint', function() {
     .pipe(jshint.reporter(stylish));
 });
 
+gulp.task('eslint',function(){
+  return gulp.src(files)
+    .pipe(eslint({
+      'rules': {
+        'indent': [2,2],
+        'quotes': [ 2,'single'],
+        'linebreak-style': [2,'unix'],
+        'semi': [2,'always'],
+        'no-console': 0
+      },
+      'env': {
+        'es6': true,
+        'node':true,
+        'mocha':true
+      },
+      'extends': 'eslint:recommended'
+    }))
+    .pipe(eslint.format());
+});
+
 gulp.task('test', function() {
   return gulp.src('./test/test.js',{read: false})
           .pipe(mocha());
