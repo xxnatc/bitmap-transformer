@@ -41,7 +41,7 @@ The `lightness` transform takes the average of the most and least prominent colo
 ##### Luminosity
 `luminosity` uses a weighted average to account for human perception. Green is given a large proportion because we are more sensitive to green light. The RGB value is calculated to be `0.2125R + 0.7154G + 0.0721B`
 
-### Other: `scatterbrain`
+### Other: `scatterbrain`, `sepiaish`, `noise`
 ##### Scatterbrain
 `scatterbrain` randomizes each RGB value.
 
