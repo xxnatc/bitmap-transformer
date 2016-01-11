@@ -1,7 +1,7 @@
 {
   "name": "bitmap-transformer",
   "version": "1.0.0",
-  "description": "This project is to build Bitmap reader and transformer",
+  "description": "This project is to build a Bitmap reader and transformer",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha test"
@@ -18,13 +18,8 @@
   "homepage": "https://github.com/xxnatc/bitmap-transformer#readme",
   "devDependencies": {
     "chai": "^3.4.1",
-    "eslint": "^1.10.3",
     "gulp": "^3.9.0",
     "gulp-eslint": "^1.1.1",
-    "gulp-jshint": "^2.0.0",
-    "gulp-mocha": "^2.2.0",
-    "jshint": "^2.8.0",
-    "jshint-stylish": "^2.1.0",
-    "mocha": "^2.3.4"
+    "gulp-mocha": "^2.2.0"
   }
 }
