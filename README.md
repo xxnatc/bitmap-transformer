@@ -22,8 +22,11 @@ To see a list of color transform methods available, type in the command line:
 node index.js help
 ```
 
+## Endianness Compatibility
+Our code is written to handle decoding on both LE and BE machines.
+
 ## Color Transform Methods
-Our color transform methods work on both 24-bit (RGB) and 32-bit (RGBA) colordepth, as well as both paletted and non-paletted bitmaps. The alpha value in 32-bit color will not be modified to retain the original transparency.
+Our color transform methods work on both paletted and non-paletted bitmaps, specifically 8-bit indexed colors, as well as 24-bit (RGB) and 32-bit (RGBA) non-paletted color depths. The alpha value in 32-bit color will not be modified to retain the original transparency.
 
 ### Inverse Color: `inverse`
 `inverse` is the default transform. It flips each of the RGB value on the spectrum such that `(R, G, B)` becomes `(255 - R, 255 - G, 255 - B)`.
