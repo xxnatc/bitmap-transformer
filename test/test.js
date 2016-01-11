@@ -7,52 +7,60 @@ const fileHandler = require(__dirname + '/../lib/fileHandler');
 const dataHandler = require(__dirname + '/../lib/dataHandler');
 const cmdHandler = require(__dirname + '/../lib/cmdHandler');
 
-describe('the bitmap processing function', function() {
-  it('should have returned a valid buffer', function(done) {
-    fs.readFile(__dirname + '/../img/mario.bmp', function (err, data) {
-      if (err) throw err;
-      expect(data).to.be.a('buffer');
+describe('fileHandler.read function', function() {
+  it('should return the file as a buffer', function(done) {
+    fileHandler.read(__dirname + '/../img/mario.bmp', function(data) {
+      expect(Buffer.isBuffer(data)).to.eql(true);
+      done();
     });
-    done();
   });
 });
 
-describe('the bitmap conversion from buffer function', function() {
+describe('cmdHandler.js function', function() {
   beforeEach(function() {
     this.processBackup = process.argv;
-    process.argv = ['node', '/../index.js', '/../img/mario.bmp', 'inverse'];
+    process.argv = ['node', 'index.js', 'img/mario.bmp', 'inverse'];
   });
   afterEach(function() {
     process.argv = this.processBackup;
   });
-  it('should have returned an array of rgba values', function() {
-    console.log(process.argv[2]);
-    dataHandler.convertFromBuf();
+  it('should have returned an array of parameters that were passed into the command line', function() {
+    var argList = cmdHandler(process.argv);
+    expect(argList[0]).to.equal('img/mario.bmp');
+    expect(argList[1]).to.equal('inverse');
   });
 });
 
-describe('the transformation function', function() {
-  var data = [0, 1, 2, 3];
-  var transformedData = [3, 2, 1, 0];
-  it('should return an array of different values', function(done) {
-    expect(transform.inverse(data)).to.not.eql(transformedData);
-    done();
-	});
+describe('dataHandler.process function', function() {
+  it('should populate bitmap object with properties', function(done) {
+    fs.readFile(__dirname + '/../img/mario.bmp', function(err, data) {
+      var bitmap = {};
+      dataHandler.process(data, bitmap);
+      expect(bitmap).to.have.property('colorDepth', 24);
+      done();
+    });
+  });
 });
 
-describe('the bitmap conversion to buffer function', function() {
-  it('should have returned a valid buffer', function(done) {
+describe('dataHandler.convertFromBuf function', function() {
+  it('should return an array of rgba values', function() {
     var buf = new Buffer([0x62,0x75,0x66,0x66,0x65,0x72]);
-    var bytes = 0.5;
-    var transformed = [ [ 255, 255, 255 ], [ 255, 127, 255 ] ];
-    var data = dataHandler.updateBuf(buf, bytes, transformed);
-    console.log(data);
-    expect(data).to.be.a('buffer'); //halp - not working
-    done();
+    var color = dataHandler.convertFromBuf(buf, 3);
+    expect(color).to.be.an('array');
   });
 });
 
-describe('the bitmap writing function', function() {
+describe('dataHandler.updateBuf function', function() {
+  it('should return a valid buffer', function() {
+    var buf = new Buffer([0x62,0x75,0x66,0x66,0x65,0x72]);
+    var bufCopy = new Buffer([0x62,0x75,0x66,0x66,0x65,0x72]);
+    var transformed = [ [ 255, 255, 255 ], [ 255, 127, 255 ] ];
+    dataHandler.updateBuf(buf, 3, transformed);
+    expect(buf).to.not.eql(bufCopy);
+  });
+});
+
+describe('fileHandler.exportNew function', function() {
   it('should have written a new file', function(done) {
     fs.exists(__dirname + '/../img/transformed.bmp');
     done();
