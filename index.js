@@ -9,10 +9,8 @@ var index = {};
 index.handleTransform = function(data, type, param) {
   dataHandler.process(data, bitmap);
   bitmap.colors = dataHandler.convertFromBuf(bitmap.buf, bitmap.colorDepth / 8);
-  console.log(bitmap.buf);
   bitmap.transformed = transform[type](bitmap.colors, param);
   dataHandler.updateBuf(bitmap.buf, bitmap.colorDepth / 8, bitmap.transformed);
-  console.log(bitmap.buf);
   fileHandler.exportNew(bitmap.data);
 };
 
