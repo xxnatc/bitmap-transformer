@@ -14,7 +14,21 @@ describe('fileHandler.read function', function() {
 
 describe('fileHandler.exportNew function', function() {
   it('should have written a new file', function(done) {
-    fs.exists(__dirname + '/../img/transformed.bmp');
-    done();
+    var buf;
+    var readFile = function(callback) {
+      fs.readFile(__dirname + '/../img/fireflower.bmp', function(err, data) {
+        if (err) expect(true).to.eql(false);
+        buf = data;
+        fileHandler.exportNew(data, callback);
+      });
+    };
+    var exportTest = function() {
+      fs.readFile(__dirname + '/../img/transformed.bmp', function(err, data) {
+        if (err) expect(true).to.eql(false);
+        expect(data).to.eql(buf);
+        done();
+      });
+    };
+    readFile(exportTest);
   });
 });
